@@ -49,5 +49,5 @@ $RECYCLE.BIN/
 #-------------------------
 # Builds Files
 #-------------------------
-Ci4/bin/Debug/
-Ci4/bin/Release/
+Ci4/bin/
+Ci4/obj/
