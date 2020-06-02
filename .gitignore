@@ -45,3 +45,9 @@ $RECYCLE.BIN/
 
 # Visual Studio Code
 .vscode/
+
+#-------------------------
+# Builds Files
+#-------------------------
+Ci4/bin/Debug/
+Ci4/bin/Release/

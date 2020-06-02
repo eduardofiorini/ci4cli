@@ -11,7 +11,7 @@ namespace Ci4
             "\nNEW API: ci4 -n api [NAME]")]
         public IEnumerable<string> NewCommand { get; set; }
 
-        [Option('c', "create", HelpText = "Command create page, crud, entity or helper." +
+        [Option('c', "create", HelpText = "Command create page, crud, model or helper." +
             "\nCREATE PAGE: ci4 -c page [NAME]" +
             "\nCREATE ROUTE: ci4 -c route [NAME URL] [CONTROLLER] [FUNCTION] [METHOD GET, POST or * FOR ALL]" +
             "\nCREATE CRUD: ci4 -c crud [TABLE]" +
