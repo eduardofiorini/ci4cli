@@ -12,9 +12,8 @@ namespace Ci4.Process
 {
     class GitHub
     {
-        public static void Download(string username, string repository, string project)
+        public static void Download(string username, string repository, string project, string versionDown)
         {
-            var versionDown = "v4.0.3";
             var pathDownload = Environment.CurrentDirectory + @"\" + project + @"\";
             var fileName = repository + "-"+ versionDown + ".zip";
             var localZipFile = pathDownload + fileName;
@@ -30,7 +29,16 @@ namespace Ci4.Process
 
             WebClient wb = new WebClient();
             Program._colorify.WriteLine("Downloading File \"" + fileName + "\" From \"" + remoteUri + "\"", Colors.bgMuted);
-            wb.DownloadFile(new Uri(remoteUri), localZipFile);
+            try
+            {
+                wb.DownloadFile(new Uri(remoteUri), localZipFile);
+            }
+            catch (Exception)
+            {
+                Program._colorify.WriteLine("Oops! This version \"" + versionDown + "\" was not found.", Colors.bgDanger);
+                Program._colorify.WriteLine("Check if the release has v1.X.X or 1.X.X", Colors.bgDanger);
+                return;
+            }
             Program._colorify.WriteLine("Successfully Downloaded File \"" + fileName + "\"", Colors.bgMuted);
             Program._colorify.WriteLine("Downloaded file saved in the following file system folder:", Colors.bgMuted);
             Program._colorify.WriteLine(pathDownload + fileName, Colors.bgMuted);

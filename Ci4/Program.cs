@@ -46,7 +46,7 @@ namespace Ci4
                             switch (args[1].ToString())
                             {
                                 case "project":
-                                    Process.GitHub.Download("CodeIgniter4", "CodeIgniter4", args[2].ToString());
+                                    Process.GitHub.Download("CodeIgniter4", "CodeIgniter4", args[2].ToString(), args.Count() == 4 ? args[3].ToString() : "v4.0.3");
                                     break;
                                 case "template":
                                     if (Function.Validation.ExistDirectory())
@@ -125,6 +125,25 @@ namespace Ci4
                         {
                             _colorify.WriteLine("\nCreating a new page or derivations with null or empty name is not allowed.", Colors.bgDanger);
                             _colorify.ResetColor();
+                        }
+                    }
+                    break;
+                case "-l":
+                case "--list":
+                    if (args.Count() >= 2)
+                    {
+                        switch (args[1].ToString())
+                        {
+                            case "translate":
+                                Process.List.Translate();
+                                break;
+                            case "template":
+                                Process.List.Template();
+                                break;
+                            default:
+                                _colorify.WriteLine("Command \"" + args[1].ToString() + "\" is not valid, use one of these commands: translate or template.", Colors.bgDanger);
+                                _colorify.ResetColor();
+                                break;
                         }
                     }
                     break;
