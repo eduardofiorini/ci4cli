@@ -14,10 +14,13 @@ namespace Ci4.Process
             #region Variables
             DotNetEnv.Env.Load();
 
-            var path = Environment.CurrentDirectory + @"\app\";
-            var controllers = path + @"Controllers\";
-            var models = path + @"Models\";
-            var views = path + @"Views\" + name.ToLower() + @"\";
+            var pathDir = Environment.CurrentDirectory + @"\app\";
+            var controllersDir = pathDir + @"Controllers\";
+            var modelsDir = pathDir + @"Models\";
+            var viewsDir = pathDir + @"Views\" + name.ToLower() + @"\";
+            var templateDir = pathDir + @"Views\templates\";
+            var isTemplate = Directory.Exists(templateDir) ? true : false;
+
             //var route = path + @"Config\route.php";
             //var url = "http://" + (DotNetEnv.Env.GetString("APP_URL_BASE").Replace("http://", "").Replace("https://", "") + DotNetEnv.Env.GetString("APP_URL_PATH")).Replace("//", "/");
 
@@ -29,12 +32,12 @@ namespace Ci4.Process
             #endregion
 
             #region Create Controller
-            if (!Directory.Exists(controllers))
-                Directory.CreateDirectory(controllers);
+            if (!Directory.Exists(controllersDir))
+                Directory.CreateDirectory(controllersDir);
 
-            if (!File.Exists(controllers + Function.Util.FormatName(name) + ".php"))
+            if (!File.Exists(controllersDir + Function.Util.FormatName(name) + ".php"))
             {
-                var controllerFile = File.Create(controllers + Function.Util.FormatName(name) + ".php");
+                var controllerFile = File.Create(controllersDir + Function.Util.FormatName(name) + ".php");
                 var controllerWriter = new StreamWriter(controllerFile);
                 controllerWriter.WriteLine(@"<?php");
                 controllerWriter.WriteLine(@"namespace App\Controllers;");
@@ -46,24 +49,56 @@ namespace Ci4.Process
                 controllerWriter.WriteLine(@"{");
                 if (crud)
                 {
+                    var header = isTemplate ? String.Format("echo view('templates/{0}');","header") : "//" + String.Format("echo view('templates/{0}');", "header");
+                    var footer = isTemplate ? String.Format("echo view('templates/{0}');","footer") : "//" + String.Format("echo view('templates/{0}');", "footer");
                     controllerWriter.WriteLine(@"    public function index()");
                     controllerWriter.WriteLine(@"    {");
-                    controllerWriter.WriteLine(@"        View::render('" + name.ToLower() + "/index', true, array('" + name.ToLower() + "' => " + Function.Util.FormatName(name) + "Model::list" + Function.Util.FormatName(name) + "()));");
+                    controllerWriter.WriteLine(@"        " + header);
+                    controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/index', $data);");
+                    controllerWriter.WriteLine(@"        " + footer);
                     controllerWriter.WriteLine(@"    }");
                     controllerWriter.WriteLine(@"");
                     controllerWriter.WriteLine(@"    public function create()");
                     controllerWriter.WriteLine(@"    {");
-                    controllerWriter.WriteLine(@"        View::render('" + name.ToLower() + "/add', true, array('" + name.ToLower() + "' => " + Function.Util.FormatName(name) + "Model::insert" + Function.Util.FormatName(name) + "()));");
+                    controllerWriter.WriteLine(@"        " + header);
+                    controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/create', $data);");
+                    controllerWriter.WriteLine(@"        " + footer);
                     controllerWriter.WriteLine(@"    }");
                     controllerWriter.WriteLine(@"");
                     controllerWriter.WriteLine(@"    public function edit()");
                     controllerWriter.WriteLine(@"    {");
-                    controllerWriter.WriteLine(@"        View::render('" + name.ToLower() + "/edit', true, array('" + name.ToLower() + "' => " + Function.Util.FormatName(name) + "Model::update" + Function.Util.FormatName(name) + "()));");
+                    controllerWriter.WriteLine(@"        " + header);
+                    controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/edit', $data);");
+                    controllerWriter.WriteLine(@"        " + footer);
+                    controllerWriter.WriteLine(@"    }");
+                    controllerWriter.WriteLine(@"");
+                    controllerWriter.WriteLine(@"    public function show()");
+                    controllerWriter.WriteLine(@"    {");
+                    controllerWriter.WriteLine(@"        " + header);
+                    controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/show', $data);");
+                    controllerWriter.WriteLine(@"        " + footer);
                     controllerWriter.WriteLine(@"    }");
                     controllerWriter.WriteLine(@"");
                     controllerWriter.WriteLine(@"    public function delete()");
                     controllerWriter.WriteLine(@"    {");
-                    controllerWriter.WriteLine(@"        View::render('" + name.ToLower() + "/delete', true, array('" + name.ToLower() + "' => " + Function.Util.FormatName(name) + "Model::delete" + Function.Util.FormatName(name) + "()));");
+                    controllerWriter.WriteLine(@"        " + header);
+                    controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/delete', $data);");
+                    controllerWriter.WriteLine(@"        " + footer);
+                    controllerWriter.WriteLine(@"    }");
+                    controllerWriter.WriteLine(@"");
+                    controllerWriter.WriteLine(@"    public function store()");
+                    controllerWriter.WriteLine(@"    {");
+                    controllerWriter.WriteLine(@"        $data = $this->request->getvar();");
+                    controllerWriter.WriteLine(@"        $this->cliente_model->save($data);");
+                    controllerWriter.WriteLine(@"        if(isset($dados['id_cliente']))");
+                    controllerWriter.WriteLine(@"        {");
+                    controllerWriter.WriteLine(@"           $session = session();");
+                    controllerWriter.WriteLine(@"           $session->setFlashdata('alert', 'success_edit');");
+                    controllerWriter.WriteLine(@"           return redirect()->to('/clientes');");
+                    controllerWriter.WriteLine(@"        }");
+                    controllerWriter.WriteLine(@"        $session = session();");
+                    controllerWriter.WriteLine(@"        $session->setFlashdata('alert', 'success_create');");
+                    controllerWriter.WriteLine(@"        return redirect()->to('/clientes');");
                     controllerWriter.WriteLine(@"    }");
                 }
                 else
@@ -76,22 +111,22 @@ namespace Ci4.Process
                 controllerWriter.WriteLine(@"}");
                 controllerWriter.Dispose();
                 Program._colorify.WriteLine("Controller successfully created!", Colors.bgSuccess);
-                Program._colorify.WriteLine(controllers + Function.Util.FormatName(name) + ".php", Colors.bgMuted);
+                Program._colorify.WriteLine(controllersDir + Function.Util.FormatName(name) + ".php", Colors.bgMuted);
             }
             else
             {
                 Program._colorify.WriteLine(Function.Util.FormatName(name) + ".php already exists and so was not generated.", Colors.bgDanger);
-                Program._colorify.WriteLine(controllers + Function.Util.FormatName(name) + ".php", Colors.bgMuted);
+                Program._colorify.WriteLine(controllersDir + Function.Util.FormatName(name) + ".php", Colors.bgMuted);
             }
             #endregion
 
             #region Create Model
-            if (!Directory.Exists(models))
-                Directory.CreateDirectory(models);
+            if (!Directory.Exists(modelsDir))
+                Directory.CreateDirectory(modelsDir);
 
-            if (crud == true && !File.Exists(models + Function.Util.FormatName(name) + "Model.php"))
+            if (crud == true && !File.Exists(modelsDir + Function.Util.FormatName(name) + "Model.php"))
             {
-                var modelFile = File.Create(models + Function.Util.FormatName(name) + "Model.php");
+                var modelFile = File.Create(modelsDir + Function.Util.FormatName(name) + "Model.php");
                 var modelWriter = new StreamWriter(modelFile);
                 modelWriter.WriteLine(@"<?php");
                 modelWriter.WriteLine(@"namespace App\Models");
@@ -138,24 +173,24 @@ namespace Ci4.Process
                 modelWriter.WriteLine(@"}");
                 modelWriter.Dispose();
                 Program._colorify.WriteLine("Model successfully created!", Colors.bgSuccess);
-                Program._colorify.WriteLine(models + Function.Util.FormatName(name) + "Model.php", Colors.bgMuted);
+                Program._colorify.WriteLine(modelsDir + Function.Util.FormatName(name) + "Model.php", Colors.bgMuted);
             }
             else
             {
                 Program._colorify.WriteLine(Function.Util.FormatName(name) + "Model.php already exists and so was not generated.", Colors.bgDanger);
-                Program._colorify.WriteLine(models + Function.Util.FormatName(name) + "Model.php", Colors.bgMuted);
+                Program._colorify.WriteLine(modelsDir + Function.Util.FormatName(name) + "Model.php", Colors.bgMuted);
             }
             #endregion
 
             #region Create View
-            if (!Directory.Exists(views))
-                Directory.CreateDirectory(views);
+            if (!Directory.Exists(viewsDir))
+                Directory.CreateDirectory(viewsDir);
 
             if (crud)
             {
-                if (!File.Exists(views + "index.php"))
+                if (!File.Exists(viewsDir + "index.php"))
                 {
-                    var viewFile = File.Create(views + "index.php");
+                    var viewFile = File.Create(viewsDir + "index.php");
                     var viewWriter = new StreamWriter(viewFile);
                     viewWriter.WriteLine("{% extends \"templates/default/base.php\" %}");
                     viewWriter.WriteLine("{% block title %}List - " + Function.Util.FormatName(name.Replace("_", "#")) + "{% endblock %}");
@@ -176,17 +211,17 @@ namespace Ci4.Process
                     viewWriter.WriteLine("{% endblock %}");
                     viewWriter.Dispose();
                     Program._colorify.WriteLine("View successfully created!", Colors.bgSuccess);
-                    Program._colorify.WriteLine(views + "index.php", Colors.bgMuted);
+                    Program._colorify.WriteLine(viewsDir + "index.php", Colors.bgMuted);
                 }
                 else
                 {
                     Program._colorify.WriteLine(Function.Util.FormatName(name) + @"/index.php already exists and so was not generated.", Colors.bgDanger);
-                    Program._colorify.WriteLine(views + "index.php", Colors.bgMuted);
+                    Program._colorify.WriteLine(viewsDir + "index.php", Colors.bgMuted);
                 }
 
-                if (!File.Exists(views + "add.php"))
+                if (!File.Exists(viewsDir + "add.php"))
                 {
-                    var viewFile = File.Create(views + "add.php");
+                    var viewFile = File.Create(viewsDir + "add.php");
                     var viewWriter = new StreamWriter(viewFile);
                     viewWriter.WriteLine("{% extends \"templates/default/base.php\" %}");
                     viewWriter.WriteLine("{% block title %}Add - " + Function.Util.FormatName(name.Replace("_", "#")) + "{% endblock %}");
@@ -195,17 +230,17 @@ namespace Ci4.Process
                     viewWriter.WriteLine("{% endblock %}");
                     viewWriter.Dispose();
                     Program._colorify.WriteLine("View successfully created!", Colors.bgSuccess);
-                    Program._colorify.WriteLine(views + "add.php", Colors.bgMuted);
+                    Program._colorify.WriteLine(viewsDir + "add.php", Colors.bgMuted);
                 }
                 else
                 {
                     Program._colorify.WriteLine(Function.Util.FormatName(name) + @"/add.php already exists and so was not generated.", Colors.bgDanger);
-                    Program._colorify.WriteLine(views + "add.php", Colors.bgMuted);
+                    Program._colorify.WriteLine(viewsDir + "add.php", Colors.bgMuted);
                 }
 
-                if (!File.Exists(views + "edit.php"))
+                if (!File.Exists(viewsDir + "edit.php"))
                 {
-                    var viewFile = File.Create(views + "edit.php");
+                    var viewFile = File.Create(viewsDir + "edit.php");
                     var viewWriter = new StreamWriter(viewFile);
                     viewWriter.WriteLine("{% extends \"templates/default/base.php\" %}");
                     viewWriter.WriteLine("{% block title %}Edit - " + Function.Util.FormatName(name.Replace("_", "#")) + "{% endblock %}");
@@ -214,17 +249,17 @@ namespace Ci4.Process
                     viewWriter.WriteLine("{% endblock %}");
                     viewWriter.Dispose();
                     Program._colorify.WriteLine("View successfully created!", Colors.bgSuccess);
-                    Program._colorify.WriteLine(views + "edit.php", Colors.bgMuted);
+                    Program._colorify.WriteLine(viewsDir + "edit.php", Colors.bgMuted);
                 }
                 else
                 {
                     Program._colorify.WriteLine(Function.Util.FormatName(name) + @"/edit.php already exists and so was not generated.", Colors.bgDanger);
-                    Program._colorify.WriteLine(views + "edit.php", Colors.bgMuted);
+                    Program._colorify.WriteLine(viewsDir + "edit.php", Colors.bgMuted);
                 }
 
-                if (!File.Exists(views + "delete.php"))
+                if (!File.Exists(viewsDir + "delete.php"))
                 {
-                    var viewFile = File.Create(views + "delete.php");
+                    var viewFile = File.Create(viewsDir + "delete.php");
                     var viewWriter = new StreamWriter(viewFile);
                     viewWriter.WriteLine("{% extends \"templates/default/base.php\" %}");
                     viewWriter.WriteLine("{% block title %}Delete - " + Function.Util.FormatName(name.Replace("_", "#")) + "{% endblock %}");
@@ -233,19 +268,19 @@ namespace Ci4.Process
                     viewWriter.WriteLine("{% endblock %}");
                     viewWriter.Dispose();
                     Program._colorify.WriteLine("View successfully created!", Colors.bgSuccess);
-                    Program._colorify.WriteLine(views + "delete.php", Colors.bgMuted);
+                    Program._colorify.WriteLine(viewsDir + "delete.php", Colors.bgMuted);
                 }
                 else
                 {
                     Program._colorify.WriteLine(Function.Util.FormatName(name) + @"/delete.php already exists and so was not generated.", Colors.bgDanger);
-                    Program._colorify.WriteLine(views + "delete.php", Colors.bgMuted);
+                    Program._colorify.WriteLine(viewsDir + "delete.php", Colors.bgMuted);
                 }
             }
             else
             {
-                if (!File.Exists(views + "index.php"))
+                if (!File.Exists(viewsDir + "index.php"))
                 {
-                    var viewFile = File.Create(views + "index.php");
+                    var viewFile = File.Create(viewsDir + "index.php");
                     var viewWriter = new StreamWriter(viewFile);
                     viewWriter.WriteLine("{% extends \"templates/default/base.php\" %}");
                     viewWriter.WriteLine("{% block title %}" + Function.Util.FormatName(name.Replace("_", "#")) + "{% endblock %}");
@@ -254,12 +289,12 @@ namespace Ci4.Process
                     viewWriter.WriteLine("{% endblock %}");
                     viewWriter.Dispose();
                     Program._colorify.WriteLine("View successfully created!", Colors.bgSuccess);
-                    Program._colorify.WriteLine(views + "index.php", Colors.bgMuted);
+                    Program._colorify.WriteLine(viewsDir + "index.php", Colors.bgMuted);
                 }
                 else
                 {
                     Program._colorify.WriteLine(Function.Util.FormatName(name) + @"/index.php already exists and so was not generated.", Colors.bgDanger);
-                    Program._colorify.WriteLine(views + "index.php", Colors.bgMuted);
+                    Program._colorify.WriteLine(viewsDir + "index.php", Colors.bgMuted);
                 }
             }
             #endregion

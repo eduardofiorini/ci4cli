@@ -11,7 +11,7 @@ namespace Ci4.Process
         {
             Program._colorify.WriteLine("+---------------------+", Colors.bgDefault);
             Program._colorify.WriteLine("| ISO CODE | LANGUAGE |", Colors.bgDefault);
-            Program._colorify.WriteLine("+---------------------+", Colors.bgDefault);
+            Program._colorify.WriteLine("+----------+----------+", Colors.bgDefault);
             Program._colorify.WriteLine("| ar       | Arabic   |", Colors.bgDefault);
             Program._colorify.WriteLine("| ar       | Arabic   |", Colors.bgDefault);
             Program._colorify.WriteLine("| ar       | Arabic   |", Colors.bgDefault);
@@ -23,17 +23,17 @@ namespace Ci4.Process
         }
         public static void Template()
         {
-            Program._colorify.WriteLine("+----------------------------------------------+", Colors.bgDefault);
-            Program._colorify.WriteLine("| CODE     | AUTHOR      | GITHUB              | ", Colors.bgDefault);
-            Program._colorify.WriteLine("+----------------------------------------------+", Colors.bgDefault);
-            Program._colorify.WriteLine("| ar       | Arabic      |                     |", Colors.bgDefault);
-            Program._colorify.WriteLine("| ar       | Arabic      |                     |", Colors.bgDefault);
-            Program._colorify.WriteLine("| ar       | Arabic      |                     |", Colors.bgDefault);
-            Program._colorify.WriteLine("| ar       | Arabic      |                     |", Colors.bgDefault);
-            Program._colorify.WriteLine("| ar       | Arabic      |                     |", Colors.bgDefault);
-            Program._colorify.WriteLine("| ar       | Arabic      |                     |", Colors.bgDefault);
-            Program._colorify.WriteLine("| ar       | Arabic      |                     |", Colors.bgDefault);
-            Program._colorify.WriteLine("+----------------------------------------------+", Colors.bgDefault);
+            Program._colorify.WriteLine("+-----------------------------------------------------+", Colors.bgDefault);
+            Program._colorify.WriteLine("| CODE     | AUTHOR      | GITHUB                     | ", Colors.bgDefault);
+            Program._colorify.WriteLine("+----------+-------------+----------------------------+", Colors.bgDefault);
+            Program._colorify.WriteLine("| ar       | Arabic      |                            |", Colors.bgDefault);
+            Program._colorify.WriteLine("| ar       | Arabic      |                            |", Colors.bgDefault);
+            Program._colorify.WriteLine("| ar       | Arabic      |                            |", Colors.bgDefault);
+            Program._colorify.WriteLine("| ar       | Arabic      |                            |", Colors.bgDefault);
+            Program._colorify.WriteLine("| ar       | Arabic      |                            |", Colors.bgDefault);
+            Program._colorify.WriteLine("| ar       | Arabic      |                            |", Colors.bgDefault);
+            Program._colorify.WriteLine("| ar       | Arabic      |                            |", Colors.bgDefault);
+            Program._colorify.WriteLine("+-----------------------------------------------------+", Colors.bgDefault);
         }
     }
 }
