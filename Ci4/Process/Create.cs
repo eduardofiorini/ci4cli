@@ -45,18 +45,21 @@ namespace Ci4.Process
                 {
                     controllerWriter.WriteLine(@"use App\Models\" + Function.Util.FormatName(name) + "Model;");
                 }
+                
+                var header = isTemplate ? String.Format("echo view('templates/{0}');", "header") : "//" + String.Format("echo view('templates/{0}');", "header");
+                var footer = isTemplate ? String.Format("echo view('templates/{0}');", "footer") : "//" + String.Format("echo view('templates/{0}');", "footer");
+
                 controllerWriter.WriteLine(@"class " + Function.Util.FormatName(name) + " extends BaseController");
                 controllerWriter.WriteLine(@"{");
+                controllerWriter.WriteLine(@"    public function index()");
+                controllerWriter.WriteLine(@"    {");
+                controllerWriter.WriteLine(@"        " + header);
+                controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/index', $data);");
+                controllerWriter.WriteLine(@"        " + footer);
+                controllerWriter.WriteLine(@"    }");
+                
                 if (crud)
                 {
-                    var header = isTemplate ? String.Format("echo view('templates/{0}');","header") : "//" + String.Format("echo view('templates/{0}');", "header");
-                    var footer = isTemplate ? String.Format("echo view('templates/{0}');","footer") : "//" + String.Format("echo view('templates/{0}');", "footer");
-                    controllerWriter.WriteLine(@"    public function index()");
-                    controllerWriter.WriteLine(@"    {");
-                    controllerWriter.WriteLine(@"        " + header);
-                    controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/index', $data);");
-                    controllerWriter.WriteLine(@"        " + footer);
-                    controllerWriter.WriteLine(@"    }");
                     controllerWriter.WriteLine(@"");
                     controllerWriter.WriteLine(@"    public function create()");
                     controllerWriter.WriteLine(@"    {");
@@ -101,13 +104,7 @@ namespace Ci4.Process
                     controllerWriter.WriteLine(@"        return redirect()->to('/clientes');");
                     controllerWriter.WriteLine(@"    }");
                 }
-                else
-                {
-                    controllerWriter.WriteLine(@"    public function index()");
-                    controllerWriter.WriteLine(@"    {");
-                    controllerWriter.WriteLine(@"        return view('"+ name.ToLower() + "/index');");
-                    controllerWriter.WriteLine(@"    }");
-                }
+
                 controllerWriter.WriteLine(@"}");
                 controllerWriter.Dispose();
                 Program._colorify.WriteLine("Controller successfully created!", Colors.bgSuccess);
