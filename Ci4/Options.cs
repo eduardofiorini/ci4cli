@@ -7,7 +7,7 @@ namespace Ci4
     {
         [Option('n', "new", HelpText = "Command create new project, template or api." +
                         "\n■ NEW API: ci4 -n api [NAME]" +
-                        "\n■ NEW PROJECT: ci4 -n project [NAME]" +
+                        "\n■ NEW PROJECT: ci4 -n project [NAME] [VERSION]" +
                         "\n■ NEW TRANSLATE: ci4 -n translate [ISO CODE]" +
                         "\n■ NEW TEMPLATE: ci4 -n template [TEMPLATE]")]
         public IEnumerable<string> NewCommand { get; set; }
@@ -17,7 +17,7 @@ namespace Ci4
                         "\n■ CREATE ROUTE: ci4 -c route [NAME URL] [CONTROLLER] [FUNCTION] [METHOD GET, POST or * FOR ALL]" +
                         "\n■ CREATE CRUD: ci4 -c crud [TABLE]" +
                         "\n■ CREATE MODEL: ci4 -c model [TABLE] or [* FOR ALL]" +
-                        "\n■ CREATE PAGE: ci4 -c helper [NAME]")]
+                        "\n■ CREATE HELPER: ci4 -c helper [NAME]")]
         public IEnumerable<string> CreateCommand { get; set; }
 
         [Option('l', "list", HelpText = "Command list itens." +

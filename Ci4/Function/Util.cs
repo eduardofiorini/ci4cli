@@ -39,6 +39,11 @@ namespace Ci4.Function
             }
         }
 
+        public static string FormatUnderline(string name)
+        {
+            return name.ToLower().Replace(" ", "_").Trim();
+        }
+
         public static void InsertLine(string filePaht, int line, string content)
         {
             var txtLines = File.ReadAllLines(filePaht).ToList();

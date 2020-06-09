@@ -20,7 +20,7 @@ namespace Ci4.Process
             var viewsDir = pathDir + @"Views\" + name.ToLower() + @"\";
             var templateDir = pathDir + @"Views\templates\";
             var isTemplate = Directory.Exists(templateDir) ? true : false;
-
+            var nameItem = Function.Util.FormatUnderline(name);
             //var route = path + @"Config\route.php";
             //var url = "http://" + (DotNetEnv.Env.GetString("APP_URL_BASE").Replace("http://", "").Replace("https://", "") + DotNetEnv.Env.GetString("APP_URL_PATH")).Replace("//", "/");
 
@@ -45,19 +45,40 @@ namespace Ci4.Process
                 {
                     controllerWriter.WriteLine(@"use App\Models\" + Function.Util.FormatName(name) + "Model;");
                 }
-                
+
                 var header = isTemplate ? String.Format("echo view('templates/{0}');", "header") : "//" + String.Format("echo view('templates/{0}');", "header");
                 var footer = isTemplate ? String.Format("echo view('templates/{0}');", "footer") : "//" + String.Format("echo view('templates/{0}');", "footer");
 
                 controllerWriter.WriteLine(@"class " + Function.Util.FormatName(name) + " extends BaseController");
                 controllerWriter.WriteLine(@"{");
+                controllerWriter.WriteLine(@"    private $links;");
+                if (crud)
+                {
+                    controllerWriter.WriteLine(@"    private $" + nameItem + "_modal;");
+                }
+                controllerWriter.WriteLine(@"");
+                controllerWriter.WriteLine(@"    function __construct()");
+                controllerWriter.WriteLine(@"    {");
+                controllerWriter.WriteLine(@"        $this->links = [ 'menu' => '3.m', 'item' => '3.0', 'subItem' => '3.3' ];");
+                if (crud)
+                {
+                    controllerWriter.WriteLine(@"        $this->" + nameItem + "_model = new " + Function.Util.FormatName(name) + "Model();");
+                }
+                controllerWriter.WriteLine(@"    }");
+                controllerWriter.WriteLine(@"");
                 controllerWriter.WriteLine(@"    public function index()");
                 controllerWriter.WriteLine(@"    {");
+                controllerWriter.WriteLine(@"        $data['links'] = $this->links;");
+                controllerWriter.WriteLine(@"        $data['title'] = ['modulo' => '" + name.ToUpper() + "', 'icone'  => 'fa fa-list'];");
+                controllerWriter.WriteLine(@"        $data['path'] = [['titulo' => 'Início', 'rota' => '/inicio', 'active' => false], ['titulo' => '" + name.ToUpper() + "', 'rota'   => '', 'active' => true]];");
+                if (crud)
+                {
+                    controllerWriter.WriteLine(@"        $data['" + nameItem + "'] = $this->" + nameItem + "_model->findAll();");
+                }
                 controllerWriter.WriteLine(@"        " + header);
                 controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/index', $data);");
                 controllerWriter.WriteLine(@"        " + footer);
                 controllerWriter.WriteLine(@"    }");
-                
                 if (crud)
                 {
                     controllerWriter.WriteLine(@"");
@@ -120,62 +141,17 @@ namespace Ci4.Process
             #region Create Model
             if (!Directory.Exists(modelsDir))
                 Directory.CreateDirectory(modelsDir);
-
-            if (crud == true && !File.Exists(modelsDir + Function.Util.FormatName(name) + "Model.php"))
+            if (crud)
             {
-                var modelFile = File.Create(modelsDir + Function.Util.FormatName(name) + "Model.php");
-                var modelWriter = new StreamWriter(modelFile);
-                modelWriter.WriteLine(@"<?php");
-                modelWriter.WriteLine(@"namespace App\Models");
-                modelWriter.WriteLine(@"{");
-                modelWriter.WriteLine(@"    use System\Core\Model;");
-                modelWriter.WriteLine(@"    class " + Function.Util.FormatName(name) + "Model extends Model");
-                modelWriter.WriteLine(@"    {");
-                modelWriter.WriteLine(@"        public function __construct()");
-                modelWriter.WriteLine(@"        {");
-                modelWriter.WriteLine(@"            parent::__construct();");
-                modelWriter.WriteLine(@"        }");
-                if (crud)
+                if (!File.Exists(modelsDir + Function.Util.FormatName(name) + "Model.php"))
                 {
-                    string varName = name.Replace("_", "").ToLower();
-                    modelWriter.WriteLine(@"");
-                    modelWriter.WriteLine(@"        public static function list" + Function.Util.FormatName(name) + "()");
-                    modelWriter.WriteLine(@"        {");
-                    modelWriter.WriteLine(@"            require __DIR__.'/../config/bootstrap.php';");
-                    modelWriter.WriteLine(@"            if(isset($entityManager)){");
-                    modelWriter.WriteLine(@"                $" + varName + @"Repository = $entityManager->getRepository('\App\Entities\" + Function.Util.FormatName(name) + "');");
-                    modelWriter.WriteLine(@"                $" + varName + " = $" + varName + "Repository->findAll();");
-                    modelWriter.WriteLine(@"                return $" + varName + ";");
-                    modelWriter.WriteLine(@"            }else{");
-                    modelWriter.WriteLine(@"                return null;");
-                    modelWriter.WriteLine(@"            }");
-                    modelWriter.WriteLine(@"        }");
-                    modelWriter.WriteLine(@"");
-                    modelWriter.WriteLine(@"        public static function insert" + Function.Util.FormatName(name) + "()");
-                    modelWriter.WriteLine(@"        {");
-                    modelWriter.WriteLine(@"            require __DIR__.'/../config/bootstrap.php';");
-                    modelWriter.WriteLine(@"        }");
-                    modelWriter.WriteLine(@"");
-                    modelWriter.WriteLine(@"        public static function update" + Function.Util.FormatName(name) + "()");
-                    modelWriter.WriteLine(@"        {");
-                    modelWriter.WriteLine(@"            require __DIR__.'/../config/bootstrap.php';");
-                    modelWriter.WriteLine(@"        }");
-                    modelWriter.WriteLine(@"");
-                    modelWriter.WriteLine(@"        public static function delete" + Function.Util.FormatName(name) + "()");
-                    modelWriter.WriteLine(@"        {");
-                    modelWriter.WriteLine(@"            require __DIR__.'/../config/bootstrap.php';");
-                    modelWriter.WriteLine(@"        }");
+                    Model(name);
                 }
-                modelWriter.WriteLine(@"    }");
-                modelWriter.WriteLine(@"}");
-                modelWriter.Dispose();
-                Program._colorify.WriteLine("Model successfully created!", Colors.bgSuccess);
-                Program._colorify.WriteLine(modelsDir + Function.Util.FormatName(name) + "Model.php", Colors.bgMuted);
-            }
-            else
-            {
-                Program._colorify.WriteLine(Function.Util.FormatName(name) + "Model.php already exists and so was not generated.", Colors.bgDanger);
-                Program._colorify.WriteLine(modelsDir + Function.Util.FormatName(name) + "Model.php", Colors.bgMuted);
+                else
+                {
+                    Program._colorify.WriteLine(Function.Util.FormatName(name) + "Model.php already exists and so was not generated.", Colors.bgDanger);
+                    Program._colorify.WriteLine(modelsDir + Function.Util.FormatName(name) + "Model.php", Colors.bgMuted);
+                }
             }
             #endregion
 
@@ -318,7 +294,8 @@ namespace Ci4.Process
                     }
                     break;
                 default:
-                    if (string.IsNullOrEmpty(driver)) {
+                    if (string.IsNullOrEmpty(driver))
+                    {
                         Program._colorify.WriteLine("Please define a database in the settings of the .env file.", Colors.bgDanger);
                     }
                     else
