@@ -12,10 +12,6 @@ namespace Ci4.Function
 
             if (!Directory.Exists(Environment.CurrentDirectory + @"\app\"))
                 check = false;
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\system\"))
-                check = false;
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\public\"))
-                check = false;
 
             return check;
         }

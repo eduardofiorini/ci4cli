@@ -4,7 +4,7 @@ namespace App\Cells;
 
 use CodeIgniter\View\Cells\Cell;
 
-class [CLASSNAME]Cell extends Cell
+class [CLASSNAME] extends Cell
 {
     [CLASSVALUE]
 }

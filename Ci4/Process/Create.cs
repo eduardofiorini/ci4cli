@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Ci4.Process
@@ -320,6 +319,5 @@ namespace Ci4.Process
                 Program._colorify.WriteLine("Table '" + name.ToLower() + "' does not exist.", Colors.bgDanger);
             }
         }
-
     }
 }

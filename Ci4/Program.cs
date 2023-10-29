@@ -111,6 +111,7 @@ namespace Ci4
                             _colorify.WriteLine("\nCreating a new project or derivations with null or empty name is not allowed.", Colors.bgDanger);
                             _colorify.ResetColor();
                         }
+                        _colorify.ResetColor();
                     }
                     break;
                 case "-c":
@@ -129,17 +130,38 @@ namespace Ci4
 
                                 switch (args[1].ToString())
                                 {
-                                    case "page":
-                                        Process.Create.Page(args[2].ToString());
+                                    case "cell":
+                                        Process.Maker.Cell(args[2].ToString());
                                         break;
-                                    case "crud":
-                                        Process.Create.Crud(args[2].ToString());
+                                    case "command":
+                                        Process.Maker.Command(args[2].ToString());
+                                        break;
+                                    case "config":
+                                        Process.Maker.Config(args[2].ToString());
+                                        break;
+                                    case "controller":
+                                        Process.Maker.Controller(args[2].ToString());
+                                        break;
+                                    case "entitie":
+                                        Process.Maker.Entitie(args[2].ToString());
+                                        break;
+                                    case "filter":
+                                        Process.Maker.Filter(args[2].ToString());
+                                        break;
+                                    case "migration":
+                                        Process.Maker.Migration(args[2].ToString());
+                                        break;
+                                    case "seed":
+                                        Process.Maker.Seed(args[2].ToString());
                                         break;
                                     case "model":
-                                        Process.Create.Model(args[2].ToString());
+                                        Process.Maker.Model(args[2].ToString());
+                                        break;
+                                    case "validation":
+                                        Process.Maker.Validation(args[2].ToString());
                                         break;
                                     case "helper":
-                                        _colorify.WriteLine("\nHelper " + args[2].ToString() + " successfully created!", Colors.bgSuccess);
+                                        Process.Maker.Helper(args[2].ToString());
                                         break;
                                     default:
                                         _colorify.WriteLine("Command \"" + args[1].ToString() + "\" is not valid, use one of these commands: page, crud, entity or helper.", Colors.bgDanger);
@@ -158,6 +180,7 @@ namespace Ci4
                             _colorify.WriteLine("\nCreating a new page or derivations with null or empty name is not allowed.", Colors.bgDanger);
                             _colorify.ResetColor();
                         }
+                        _colorify.ResetColor();
                     }
                     break;
                 case "-l":
