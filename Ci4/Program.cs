@@ -10,6 +10,8 @@ using System.IO;
 using CliWrap.Buffered;
 using CliWrap;
 using System.Threading;
+using ShellProgressBar;
+using System.Threading.Tasks;
 
 namespace Ci4
 {
@@ -17,7 +19,7 @@ namespace Ci4
     {
         public static Format _colorify { get; set; }
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             switch (OS.GetCurrent())
             {
@@ -46,12 +48,42 @@ namespace Ci4
                             switch (args[1].ToString())
                             {
                                 case "project":
-                                    Process.GitHub.Download("CodeIgniter4", "CodeIgniter4", args[2].ToString(), args.Count() == 4 ? args[3].ToString() : "v4.0.3");
+                                    try
+                                    {
+                                        var project = args[2].ToString();
+                                        var options = new ProgressBarOptions
+                                        {
+                                            BackgroundColor = ConsoleColor.DarkGray,
+                                            ProgressCharacter = '\u2593'
+                                        };
+                                        var resultCode = 1;
+                                        Random random = new Random();
+                                        using (var pbar = new FixedDurationBar(TimeSpan.FromSeconds(random.Next(30, 38)), "Please wait downloading Codeigniter 4", options))
+                                        {
+                                            var result = await Process.Composer.Create(pbar, project);
+                                            resultCode = result.ExitCode;
+                                        }
+                                        Process.Composer.Env(project);
+                                        _colorify.ResetColor();
+                                        Console.WriteLine("");
+                                        if (resultCode == 0)
+                                        {
+                                            _colorify.WriteLine($"Project {project} successfully created!", Colors.bgSuccess);
+                                        }
+                                        else
+                                        {
+                                            _colorify.WriteLine($"Project {project} errors occurred while being processed!", Colors.bgDanger);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        _colorify.WriteLine($"Error during command execution: {ex.Message}", Colors.bgDanger);
+                                    }
                                     break;
                                 case "template":
                                     if (Function.Validation.ExistDirectory())
                                     {
-                                        _colorify.WriteLine("Tempalte \"" + args[2].ToString() + "\" successfully created!", Colors.bgSuccess);
+                                        _colorify.WriteLine($"Tempalte {args[2]} successfully created!", Colors.bgSuccess);
                                     }
                                     else
                                     {
@@ -61,7 +93,7 @@ namespace Ci4
                                 case "api":
                                     if (Function.Validation.ExistDirectory())
                                     {
-                                        _colorify.WriteLine("Api \"" + args[2].ToString() + "\" successfully created!", Colors.bgSuccess);
+                                        _colorify.WriteLine($"Api {args[2]} successfully created!", Colors.bgSuccess);
                                     }
                                     else
                                     {
@@ -69,7 +101,7 @@ namespace Ci4
                                     }
                                     break;
                                 default:
-                                    _colorify.WriteLine("Command \"" + args[1].ToString() + "\" is not valid, use one of these commands: project, template or api.", Colors.bgDanger);
+                                    _colorify.WriteLine($"Command {args[1]} is not valid, use one of these commands: project, template or api.", Colors.bgDanger);
                                     _colorify.ResetColor();
                                     break;
                             }

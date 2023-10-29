@@ -6,9 +6,8 @@ namespace Ci4
     class Options
     {
         [Option('n', "new", HelpText = "Command create new project, template or api." +
-                        "\n■ NEW API: ci4 -n api [NAME]" +
                         "\n■ NEW PROJECT: ci4 -n project [NAME] [VERSION]" +
-                        "\n■ NEW TRANSLATE: ci4 -n translate [ISO CODE]" +
+                        "\n■ NEW API: ci4 -n api [NAME]" +
                         "\n■ NEW TEMPLATE: ci4 -n template [TEMPLATE]")]
         public IEnumerable<string> NewCommand { get; set; }
 
