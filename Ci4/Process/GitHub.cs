@@ -1,12 +1,8 @@
-﻿using CliWrap.Buffered;
-using CliWrap;
-using Colorify;
+﻿using Colorify;
 using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
-using ToolBox.Platform;
-using System.Threading;
 
 namespace Ci4.Process
 {
@@ -60,14 +56,6 @@ namespace Ci4.Process
             }
             Program._colorify.WriteLine("Delete Folder \"" + pathDir + "\"", Colors.bgMuted);
             Directory.Delete(pathDir, true);
-            Program._colorify.WriteLine("Wait Configuring...", Colors.bgMuted);
-            Cli.Wrap("php").WithArguments("-r \"file_exists('" + project + "/.env') || copy('" + project + "/env', '" + project + "/.env');\"").ExecuteBufferedAsync().Select(r => r.StandardOutput);
-            Thread.Sleep(3000);
-            var php = Cli.Wrap("php").WithArguments("-r \"echo file_exists('" + project + "/.env') ? '1' : '0';\"").ExecuteBufferedAsync().Select(r => r.StandardOutput);
-            if (php.Task.Result.ToString() != "1")
-            {
-                Program._colorify.WriteLine("Please install php and execute the command \"php -r \"file_exists('.env') || copy('env', '.env');\"\" in the directory \"" + pathDownload + "\"", Colors.bgWarning);
-            }
             Program._colorify.WriteLine("Project \"" + project + "\" successfully created!", Colors.bgSuccess);
         }
 
