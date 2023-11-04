@@ -1,323 +1,104 @@
 ﻿using Colorify;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace Ci4.Process
 {
     class Create
     {
-        public static void Page(string name, bool crud = false, IEnumerable<string> columns = null)
+        public static void Cell(string name)
         {
-            #region Variables
-            DotNetEnv.Env.Load();
+            Build(name, "View", @"\app\Cells", "< !--Your HTML Here-- >");
+            Build(name, "Cell", @"\app\Cells", "// Your Code Here");
+        }
 
-            var pathDir = Environment.CurrentDirectory + @"\app\";
-            var controllersDir = pathDir + @"Controllers\";
-            var modelsDir = pathDir + @"Models\";
-            var viewsDir = pathDir + @"Views\" + name.ToLower() + @"\";
-            var templateDir = pathDir + @"Views\templates\";
-            var isTemplate = Directory.Exists(templateDir) ? true : false;
-            var nameItem = Function.Util.FormatUnderline(name);
-            //var route = path + @"Config\route.php";
-            //var url = "http://" + (DotNetEnv.Env.GetString("APP_URL_BASE").Replace("http://", "").Replace("https://", "") + DotNetEnv.Env.GetString("APP_URL_PATH")).Replace("//", "/");
+        public static void Command(string name)
+        {
+            Build(name, "Command", @"\app\Commands", "// Your Code Here");
+        }
 
-            if (Regex.IsMatch(name.Replace("_", ""), @"[^a-zA-Z0-9]"))
-            {
-                Program._colorify.WriteLine("Only letters, numbers and underline are allowed in the name!", Colors.bgDanger);
-                return;
-            }
-            #endregion
+        public static void Config(string name)
+        {
+            Build(name, "Config", @"\app\Config", "// Your Code Here");
+        }
 
-            #region Create Controller
-            if (!Directory.Exists(controllersDir))
-                Directory.CreateDirectory(controllersDir);
+        public static void Controller(string name)
+        {
+            Build(name, "Controller", @"\app\Controllers", "// Your Code Here");
+        }
 
-            if (!File.Exists(controllersDir + Function.Util.FormatName(name) + ".php"))
-            {
-                var controllerFile = File.Create(controllersDir + Function.Util.FormatName(name) + ".php");
-                var controllerWriter = new StreamWriter(controllerFile);
-                controllerWriter.WriteLine(@"<?php");
-                controllerWriter.WriteLine(@"namespace App\Controllers;");
-                if (crud)
-                {
-                    controllerWriter.WriteLine(@"use App\Models\" + Function.Util.FormatName(name) + "Model;");
-                }
+        public static void Entitie(string name)
+        {
+            Build(name, "Entitie", @"\app\Entities", "// Your Code Here");
+        }
 
-                var header = isTemplate ? String.Format("echo view('templates/{0}');", "header") : "//" + String.Format("echo view('templates/{0}');", "header");
-                var footer = isTemplate ? String.Format("echo view('templates/{0}');", "footer") : "//" + String.Format("echo view('templates/{0}');", "footer");
+        public static void Filter(string name)
+        {
+            Build(name, "Filter", @"\app\Filters", "// Your Code Here");
+        }
 
-                controllerWriter.WriteLine(@"class " + Function.Util.FormatName(name) + " extends BaseController");
-                controllerWriter.WriteLine(@"{");
-                controllerWriter.WriteLine(@"    private $links;");
-                if (crud)
-                {
-                    controllerWriter.WriteLine(@"    private $" + nameItem + "_modal;");
-                }
-                controllerWriter.WriteLine(@"");
-                controllerWriter.WriteLine(@"    function __construct()");
-                controllerWriter.WriteLine(@"    {");
-                controllerWriter.WriteLine(@"        $this->links = [ 'menu' => '3.m', 'item' => '3.0', 'subItem' => '3.3' ];");
-                if (crud)
-                {
-                    controllerWriter.WriteLine(@"        $this->" + nameItem + "_model = new " + Function.Util.FormatName(name) + "Model();");
-                }
-                controllerWriter.WriteLine(@"    }");
-                controllerWriter.WriteLine(@"");
-                controllerWriter.WriteLine(@"    public function index()");
-                controllerWriter.WriteLine(@"    {");
-                controllerWriter.WriteLine(@"        $data['links'] = $this->links;");
-                controllerWriter.WriteLine(@"        $data['title'] = ['modulo' => '" + name.ToUpper() + "', 'icone'  => 'fa fa-list'];");
-                controllerWriter.WriteLine(@"        $data['path'] = [['titulo' => 'Início', 'rota' => '/inicio', 'active' => false], ['titulo' => '" + name.ToUpper() + "', 'rota'   => '', 'active' => true]];");
-                if (crud)
-                {
-                    controllerWriter.WriteLine(@"        $data['" + nameItem + "'] = $this->" + nameItem + "_model->findAll();");
-                }
-                controllerWriter.WriteLine(@"        " + header);
-                controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/index', $data);");
-                controllerWriter.WriteLine(@"        " + footer);
-                controllerWriter.WriteLine(@"    }");
-                if (crud)
-                {
-                    controllerWriter.WriteLine(@"");
-                    controllerWriter.WriteLine(@"    public function create()");
-                    controllerWriter.WriteLine(@"    {");
-                    controllerWriter.WriteLine(@"        " + header);
-                    controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/create', $data);");
-                    controllerWriter.WriteLine(@"        " + footer);
-                    controllerWriter.WriteLine(@"    }");
-                    controllerWriter.WriteLine(@"");
-                    controllerWriter.WriteLine(@"    public function edit()");
-                    controllerWriter.WriteLine(@"    {");
-                    controllerWriter.WriteLine(@"        " + header);
-                    controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/edit', $data);");
-                    controllerWriter.WriteLine(@"        " + footer);
-                    controllerWriter.WriteLine(@"    }");
-                    controllerWriter.WriteLine(@"");
-                    controllerWriter.WriteLine(@"    public function show()");
-                    controllerWriter.WriteLine(@"    {");
-                    controllerWriter.WriteLine(@"        " + header);
-                    controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/show', $data);");
-                    controllerWriter.WriteLine(@"        " + footer);
-                    controllerWriter.WriteLine(@"    }");
-                    controllerWriter.WriteLine(@"");
-                    controllerWriter.WriteLine(@"    public function delete()");
-                    controllerWriter.WriteLine(@"    {");
-                    controllerWriter.WriteLine(@"        " + header);
-                    controllerWriter.WriteLine(@"        echo view('" + name.ToLower() + "/delete', $data);");
-                    controllerWriter.WriteLine(@"        " + footer);
-                    controllerWriter.WriteLine(@"    }");
-                    controllerWriter.WriteLine(@"");
-                    controllerWriter.WriteLine(@"    public function store()");
-                    controllerWriter.WriteLine(@"    {");
-                    controllerWriter.WriteLine(@"        $data = $this->request->getvar();");
-                    controllerWriter.WriteLine(@"        $this->cliente_model->save($data);");
-                    controllerWriter.WriteLine(@"        if(isset($dados['id_cliente']))");
-                    controllerWriter.WriteLine(@"        {");
-                    controllerWriter.WriteLine(@"           $session = session();");
-                    controllerWriter.WriteLine(@"           $session->setFlashdata('alert', 'success_edit');");
-                    controllerWriter.WriteLine(@"           return redirect()->to('/clientes');");
-                    controllerWriter.WriteLine(@"        }");
-                    controllerWriter.WriteLine(@"        $session = session();");
-                    controllerWriter.WriteLine(@"        $session->setFlashdata('alert', 'success_create');");
-                    controllerWriter.WriteLine(@"        return redirect()->to('/clientes');");
-                    controllerWriter.WriteLine(@"    }");
-                }
+        public static void Migration(string name)
+        {
+            Build(name, "Migration", @"\app\Database\Migrations", "// Your Code Here");
+        }
 
-                controllerWriter.WriteLine(@"}");
-                controllerWriter.Dispose();
-                Program._colorify.WriteLine("Controller successfully created!", Colors.bgSuccess);
-                Program._colorify.WriteLine(controllersDir + Function.Util.FormatName(name) + ".php", Colors.bgMuted);
-            }
-            else
-            {
-                Program._colorify.WriteLine(Function.Util.FormatName(name) + ".php already exists and so was not generated.", Colors.bgDanger);
-                Program._colorify.WriteLine(controllersDir + Function.Util.FormatName(name) + ".php", Colors.bgMuted);
-            }
-            #endregion
-
-            #region Create Model
-            if (!Directory.Exists(modelsDir))
-                Directory.CreateDirectory(modelsDir);
-            if (crud)
-            {
-                if (!File.Exists(modelsDir + Function.Util.FormatName(name) + "Model.php"))
-                {
-                    Model(name);
-                }
-                else
-                {
-                    Program._colorify.WriteLine(Function.Util.FormatName(name) + "Model.php already exists and so was not generated.", Colors.bgDanger);
-                    Program._colorify.WriteLine(modelsDir + Function.Util.FormatName(name) + "Model.php", Colors.bgMuted);
-                }
-            }
-            #endregion
-
-            #region Create View
-            if (!Directory.Exists(viewsDir))
-                Directory.CreateDirectory(viewsDir);
-
-            if (crud)
-            {
-                if (!File.Exists(viewsDir + "index.php"))
-                {
-                    var viewFile = File.Create(viewsDir + "index.php");
-                    var viewWriter = new StreamWriter(viewFile);
-                    viewWriter.WriteLine("{% extends \"templates/default/base.php\" %}");
-                    viewWriter.WriteLine("{% block title %}List - " + Function.Util.FormatName(name.Replace("_", "#")) + "{% endblock %}");
-                    viewWriter.WriteLine("{% block body %}");
-                    viewWriter.WriteLine("<h1><b>" + Function.Util.FormatName(name.Replace("_", "#")) + " - List</b></h1>");
-                    viewWriter.WriteLine("{% for item in " + name.ToLower() + " %}");
-                    foreach (var item in columns)
-                    {
-                        var column = item.Replace("[DATE]", "|date(\"" + DotNetEnv.Env.GetString("APP_DATE") + "\")");
-                        column = column.Replace("[DATETIME]", "|date(\"" + DotNetEnv.Env.GetString("APP_DATETIME") + "\")");
-
-                        viewWriter.WriteLine("{{ item." + column + " }}");
-                    }
-                    viewWriter.WriteLine("<br>");
-                    viewWriter.WriteLine("{% else %}");
-                    viewWriter.WriteLine("No " + Function.Util.FormatName(name.Replace("_", "#")).ToLower() + " have been found.");
-                    viewWriter.WriteLine("{% endfor %}");
-                    viewWriter.WriteLine("{% endblock %}");
-                    viewWriter.Dispose();
-                    Program._colorify.WriteLine("View successfully created!", Colors.bgSuccess);
-                    Program._colorify.WriteLine(viewsDir + "index.php", Colors.bgMuted);
-                }
-                else
-                {
-                    Program._colorify.WriteLine(Function.Util.FormatName(name) + @"/index.php already exists and so was not generated.", Colors.bgDanger);
-                    Program._colorify.WriteLine(viewsDir + "index.php", Colors.bgMuted);
-                }
-
-                if (!File.Exists(viewsDir + "add.php"))
-                {
-                    var viewFile = File.Create(viewsDir + "add.php");
-                    var viewWriter = new StreamWriter(viewFile);
-                    viewWriter.WriteLine("{% extends \"templates/default/base.php\" %}");
-                    viewWriter.WriteLine("{% block title %}Add - " + Function.Util.FormatName(name.Replace("_", "#")) + "{% endblock %}");
-                    viewWriter.WriteLine("{% block body %}");
-                    viewWriter.WriteLine("<h1><b>" + Function.Util.FormatName(name.Replace("_", "#")) + " - Add</b></h1>");
-                    viewWriter.WriteLine("{% endblock %}");
-                    viewWriter.Dispose();
-                    Program._colorify.WriteLine("View successfully created!", Colors.bgSuccess);
-                    Program._colorify.WriteLine(viewsDir + "add.php", Colors.bgMuted);
-                }
-                else
-                {
-                    Program._colorify.WriteLine(Function.Util.FormatName(name) + @"/add.php already exists and so was not generated.", Colors.bgDanger);
-                    Program._colorify.WriteLine(viewsDir + "add.php", Colors.bgMuted);
-                }
-
-                if (!File.Exists(viewsDir + "edit.php"))
-                {
-                    var viewFile = File.Create(viewsDir + "edit.php");
-                    var viewWriter = new StreamWriter(viewFile);
-                    viewWriter.WriteLine("{% extends \"templates/default/base.php\" %}");
-                    viewWriter.WriteLine("{% block title %}Edit - " + Function.Util.FormatName(name.Replace("_", "#")) + "{% endblock %}");
-                    viewWriter.WriteLine("{% block body %}");
-                    viewWriter.WriteLine("<h1><b>" + Function.Util.FormatName(name.Replace("_", "#")) + " - Edit</b></h1>");
-                    viewWriter.WriteLine("{% endblock %}");
-                    viewWriter.Dispose();
-                    Program._colorify.WriteLine("View successfully created!", Colors.bgSuccess);
-                    Program._colorify.WriteLine(viewsDir + "edit.php", Colors.bgMuted);
-                }
-                else
-                {
-                    Program._colorify.WriteLine(Function.Util.FormatName(name) + @"/edit.php already exists and so was not generated.", Colors.bgDanger);
-                    Program._colorify.WriteLine(viewsDir + "edit.php", Colors.bgMuted);
-                }
-
-                if (!File.Exists(viewsDir + "delete.php"))
-                {
-                    var viewFile = File.Create(viewsDir + "delete.php");
-                    var viewWriter = new StreamWriter(viewFile);
-                    viewWriter.WriteLine("{% extends \"templates/default/base.php\" %}");
-                    viewWriter.WriteLine("{% block title %}Delete - " + Function.Util.FormatName(name.Replace("_", "#")) + "{% endblock %}");
-                    viewWriter.WriteLine("{% block body %}");
-                    viewWriter.WriteLine("<h1><b>" + Function.Util.FormatName(name.Replace("_", "#")) + " - Delete</b></h1>");
-                    viewWriter.WriteLine("{% endblock %}");
-                    viewWriter.Dispose();
-                    Program._colorify.WriteLine("View successfully created!", Colors.bgSuccess);
-                    Program._colorify.WriteLine(viewsDir + "delete.php", Colors.bgMuted);
-                }
-                else
-                {
-                    Program._colorify.WriteLine(Function.Util.FormatName(name) + @"/delete.php already exists and so was not generated.", Colors.bgDanger);
-                    Program._colorify.WriteLine(viewsDir + "delete.php", Colors.bgMuted);
-                }
-            }
-            else
-            {
-                if (!File.Exists(viewsDir + "index.php"))
-                {
-                    var viewFile = File.Create(viewsDir + "index.php");
-                    var viewWriter = new StreamWriter(viewFile);
-                    viewWriter.WriteLine("{% extends \"templates/default/base.php\" %}");
-                    viewWriter.WriteLine("{% block title %}" + Function.Util.FormatName(name.Replace("_", "#")) + "{% endblock %}");
-                    viewWriter.WriteLine("{% block body %}");
-                    viewWriter.WriteLine("<h1>Welcome Page <b>" + Function.Util.FormatName(name.Replace("_", "#")) + "</b></h1>");
-                    viewWriter.WriteLine("{% endblock %}");
-                    viewWriter.Dispose();
-                    Program._colorify.WriteLine("View successfully created!", Colors.bgSuccess);
-                    Program._colorify.WriteLine(viewsDir + "index.php", Colors.bgMuted);
-                }
-                else
-                {
-                    Program._colorify.WriteLine(Function.Util.FormatName(name) + @"/index.php already exists and so was not generated.", Colors.bgDanger);
-                    Program._colorify.WriteLine(viewsDir + "index.php", Colors.bgMuted);
-                }
-            }
-            #endregion
+        public static void Seed(string name)
+        {
+            Build(name, "Seed", @"\app\Database\Seeds", "// Your Code Here");
         }
 
         public static void Model(string name)
         {
-            DotNetEnv.Env.Load();
-            var driver = !string.IsNullOrEmpty(DotNetEnv.Env.GetString("database.default.DBDriver")) ? DotNetEnv.Env.GetString("database.default.DBDriver") : "";
-            switch (driver)
-            {
-                case null:
-                case "":
-                    Program._colorify.WriteLine("Please, check the .env file to see if the database variables are commented out with # or are incorrect.", Colors.bgDanger);
-                    break;
-                case "MySQLi":
-                    try
-                    {
-                        Database.Mysql.Generator(name);
-                    }
-                    catch (Exception)
-                    {
-                        Program._colorify.WriteLine("The connection to MySql failed, make sure the MySql service has started.", Colors.bgDanger);
-                    }
-                    break;
-                default:
-                    if (string.IsNullOrEmpty(driver))
-                    {
-                        Program._colorify.WriteLine("Please define a database in the settings of the .env file.", Colors.bgDanger);
-                    }
-                    else
-                    {
-                        Program._colorify.WriteLine("The selected database \"" + DotNetEnv.Env.GetString("database.default.DBDriver") + "\" is not yet supported for automatic generations, only Mysql.", Colors.bgDanger);
-                    }
-                    break;
-            }
+            Build(name, "Model", @"\app\Models", "// Your Code Here");
         }
 
-        public static void Crud(string name)
+        public static void View(string name)
         {
-            if (Database.Mysql.ExistTable(name))
-            {
-                var columns = Database.Mysql.FieldTable(name);
-                Model(name);
-                Page(name, true, columns);
-                Program._colorify.WriteLine("Crud " + name.ToLower() + " successfully created!", Colors.bgSuccess);
-            }
-            else
-            {
-                Program._colorify.WriteLine("Table '" + name.ToLower() + "' does not exist.", Colors.bgDanger);
-            }
+            Build(name, "View", @"\app\Views", "< !--Your HTML Here-- >");
         }
+
+        public static void Validation(string name)
+        {
+            Build(name, "Validation", @"\app\Validation", "// Your Code Here");
+        }
+
+        public static void Helper(string name)
+        {
+            Build(name, "Helper", @"\app\Helpers", "// Your Code Here");
+        }
+
+        public static void Build(string name, string scheme, string path, string value)
+        {
+            var pathLocal = System.Reflection.Assembly.GetEntryAssembly().Location.Replace("Ci4.dll", "");
+            var pathDir = Environment.CurrentDirectory + path;
+
+            if (!Directory.Exists(pathDir))
+                Directory.CreateDirectory(pathDir);
+
+            try
+            {
+                var className = name.ToLower();
+                if (scheme == "Cell")
+                    className = $"{className}Cell";
+                string content = File.ReadAllText($@"{pathLocal}Schemes\Create\{scheme}.tpl");
+                content = content.Replace("[CLASSNAME]", $"{char.ToUpper(className[0])}{className.Substring(1)}");
+                content = content.Replace("[CLASSVALUE]", value);
+                if (scheme != "View" && scheme != "Helper")
+                    className = $"{char.ToUpper(className[0])}{className.Substring(1)}";
+                if (scheme == "Migration")
+                    className = $"{DateTime.Now.ToString("yyyy-MM-dd-HHmmss")}_{className}";
+                if (scheme == "Helper")
+                    className = $"{className}_helper";
+                string fileOutput = Path.Combine(pathDir, $"{className}.php");
+                File.WriteAllText(fileOutput, content);
+                Program._colorify.WriteLine($"{scheme} \"{name.ToLower()}\" successfully created!", Colors.bgSuccess);
+            }
+            catch (Exception ex)
+            {
+                Program._colorify.WriteLine($"{scheme} \"{name.ToLower()}\" error: {ex.Message}", Colors.bgDanger);
+            }
+
+        }
+
     }
 }

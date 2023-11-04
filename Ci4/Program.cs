@@ -57,15 +57,19 @@ namespace Ci4
                                             ProgressCharacter = '\u2593'
                                         };
                                         var resultCode = 1;
-                                        Random random = new Random();
-                                        using (var pbar = new FixedDurationBar(TimeSpan.FromSeconds(random.Next(30, 38)), "Please wait downloading Codeigniter 4", options))
+                                        using (var pbar = new FixedDurationBar(TimeSpan.FromSeconds(60), "Please wait downloading Codeigniter 4", options))
                                         {
                                             var result = await Process.Composer.Create(pbar, project);
+                                            Process.Composer.Env(project);
+                                            for (int i = pbar.CurrentTick; i < pbar.MaxTicks; i++)
+                                            {
+                                                Thread.Sleep(10);
+                                                pbar.Tick();
+                                            }
                                             resultCode = result.ExitCode;
+                                            
                                         }
-                                        Process.Composer.Env(project);
-                                        _colorify.ResetColor();
-                                        Console.WriteLine("");
+                                        _colorify.WriteLine("");
                                         if (resultCode == 0)
                                         {
                                             _colorify.WriteLine($"Project {project} successfully created!", Colors.bgSuccess);
@@ -80,38 +84,18 @@ namespace Ci4
                                         _colorify.WriteLine($"Error during command execution: {ex.Message}", Colors.bgDanger);
                                     }
                                     break;
-                                case "template":
-                                    if (Function.Validation.ExistDirectory())
-                                    {
-                                        _colorify.WriteLine($"Tempalte {args[2]} successfully created!", Colors.bgSuccess);
-                                    }
-                                    else
-                                    {
-                                        Function.Alert.ExistDirectory();
-                                    }
-                                    break;
-                                case "api":
-                                    if (Function.Validation.ExistDirectory())
-                                    {
-                                        _colorify.WriteLine($"Api {args[2]} successfully created!", Colors.bgSuccess);
-                                    }
-                                    else
-                                    {
-                                        Function.Alert.ExistDirectory();
-                                    }
-                                    break;
                                 default:
-                                    _colorify.WriteLine($"Command {args[1]} is not valid, use one of these commands: project, template or api.", Colors.bgDanger);
+                                    _colorify.WriteLine($"Command \"{args[1]}\" is not valid, check the help option in \"CI4--help\".", Colors.bgDanger);
                                     _colorify.ResetColor();
                                     break;
                             }
+                            _colorify.ResetColor();
                         }
                         else
                         {
                             _colorify.WriteLine("\nCreating a new project or derivations with null or empty name is not allowed.", Colors.bgDanger);
                             _colorify.ResetColor();
                         }
-                        _colorify.ResetColor();
                     }
                     break;
                 case "-c":
@@ -131,74 +115,99 @@ namespace Ci4
                                 switch (args[1].ToString())
                                 {
                                     case "cell":
-                                        Process.Maker.Cell(args[2].ToString());
+                                        Process.Create.Cell(args[2].ToString());
                                         break;
                                     case "command":
-                                        Process.Maker.Command(args[2].ToString());
+                                        Process.Create.Command(args[2].ToString());
                                         break;
                                     case "config":
-                                        Process.Maker.Config(args[2].ToString());
+                                        Process.Create.Config(args[2].ToString());
                                         break;
                                     case "controller":
-                                        Process.Maker.Controller(args[2].ToString());
+                                        Process.Create.Controller(args[2].ToString());
                                         break;
                                     case "entitie":
-                                        Process.Maker.Entitie(args[2].ToString());
+                                        Process.Create.Entitie(args[2].ToString());
                                         break;
                                     case "filter":
-                                        Process.Maker.Filter(args[2].ToString());
+                                        Process.Create.Filter(args[2].ToString());
                                         break;
                                     case "migration":
-                                        Process.Maker.Migration(args[2].ToString());
+                                        Process.Create.Migration(args[2].ToString());
                                         break;
                                     case "seed":
-                                        Process.Maker.Seed(args[2].ToString());
+                                        Process.Create.Seed(args[2].ToString());
                                         break;
                                     case "model":
-                                        Process.Maker.Model(args[2].ToString());
+                                        Process.Create.Model(args[2].ToString());
+                                        break;
+                                    case "view":
+                                        Process.Create.View(args[2].ToString());
                                         break;
                                     case "validation":
-                                        Process.Maker.Validation(args[2].ToString());
+                                        Process.Create.Validation(args[2].ToString());
                                         break;
                                     case "helper":
-                                        Process.Maker.Helper(args[2].ToString());
+                                        Process.Create.Helper(args[2].ToString());
+                                        break;
+                                    case "mvc":
+                                        Process.Create.Model(args[2].ToString());
+                                        Process.Create.View(args[2].ToString());
+                                        Process.Create.Controller(args[2].ToString());
+                                        break;
+                                    case "scaffold":
+                                        Process.Create.Model(args[2].ToString());
+                                        Process.Create.View(args[2].ToString());
+                                        Process.Create.Controller(args[2].ToString());
+                                        Process.Create.Migration(args[2].ToString());
+                                        Process.Create.Seed(args[2].ToString());
                                         break;
                                     default:
-                                        _colorify.WriteLine("Command \"" + args[1].ToString() + "\" is not valid, use one of these commands: page, crud, entity or helper.", Colors.bgDanger);
+                                        _colorify.WriteLine($"Command \"{args[1]}\" is not valid, check the help option in \"CI4--help\".", Colors.bgDanger);
                                         _colorify.ResetColor();
                                         break;
                                 }
+                                _colorify.ResetColor();
                             }
                             else
                             {
                                 Function.Alert.ExistDirectory();
                             }
-
                         }
                         else
                         {
-                            _colorify.WriteLine("\nCreating a new page or derivations with null or empty name is not allowed.", Colors.bgDanger);
+                            _colorify.WriteLine("\nCreating a new file or derivations with null or empty name is not allowed.", Colors.bgDanger);
                             _colorify.ResetColor();
                         }
-                        _colorify.ResetColor();
                     }
                     break;
-                case "-l":
-                case "--list":
+                case "-m":
+                case "--make":
                     if (args.Count() >= 2)
                     {
-                        switch (args[1].ToString())
+                        if (args.Count() >= 3)
                         {
-                            case "translate":
-                                Process.List.Translate();
-                                break;
-                            case "template":
-                                Process.List.Template();
-                                break;
-                            default:
-                                _colorify.WriteLine("Command \"" + args[1].ToString() + "\" is not valid, use one of these commands: translate or template.", Colors.bgDanger);
-                                _colorify.ResetColor();
-                                break;
+                            switch (args[1].ToString())
+                            {
+                                case "crud":
+                                    Process.Create.Model(args[2].ToString());
+                                    break;
+                                case "api":
+                                    Process.List.Template();
+                                    break;
+                                case "migration":
+                                    Process.List.Template();
+                                    break;
+                                default:
+                                    _colorify.WriteLine($"Command \"{args[1]}\" is not valid, check the help option in \"CI4--help\".", Colors.bgDanger);
+                                    _colorify.ResetColor();
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            _colorify.WriteLine("\nCreating a new file or derivations with null or empty name is not allowed.", Colors.bgDanger);
+                            _colorify.ResetColor();
                         }
                     }
                     break;

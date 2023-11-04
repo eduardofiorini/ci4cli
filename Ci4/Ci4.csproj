@@ -25,6 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Schemes\Api\Controller.tpl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Schemes\Api\Model.tpl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Schemes\Create\Helper.tpl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -40,10 +46,7 @@
     <None Update="Schemes\Crud\View.tpl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Schemes\Create\CellController.tpl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Schemes\Create\CellView.tpl">
+    <None Update="Schemes\Create\Cell.tpl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Schemes\Create\Command.tpl">
