@@ -69,10 +69,10 @@ namespace Ci4.Database
                 itens = itens.Remove(itens.Length - 1) + Environment.NewLine + @"    ];";
                 modelWriter.WriteLine(itens);
                 modelWriter.WriteLine(@"    protected $useTimestamps = true;");
-                modelWriter.WriteLine(@"    protected $useSoftDeletes = true;");
+                //modelWriter.WriteLine(@"    protected $useSoftDeletes = true;");
                 modelWriter.WriteLine(@"    protected $createdField  = 'created_at';");
                 modelWriter.WriteLine(@"    protected $updatedField  = 'updated_at';");
-                modelWriter.WriteLine(@"    protected $deletedField  = 'deleted_at';");
+                //modelWriter.WriteLine(@"    protected $deletedField  = 'deleted_at';");
                 modelWriter.WriteLine(@"}");
                 modelWriter.Dispose();
                 Program._colorify.WriteLine("Model successfully created!", Colors.bgSuccess);

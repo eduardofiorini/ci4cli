@@ -190,7 +190,7 @@ namespace Ci4
                             switch (args[1].ToString())
                             {
                                 case "crud":
-                                    Process.Create.Model(args[2].ToString());
+                                    Process.Make.Model(args[2].ToString());
                                     break;
                                 case "api":
                                     Process.List.Template();

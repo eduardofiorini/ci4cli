@@ -33,10 +33,10 @@ namespace Ci4
         [Option('m', "make", HelpText = "The \"Make\" command performs automated tasks:" +
                         "\n■ MAKE LOGIN: ci4 -m login" +
                         "\n■ MAKE OAUTH: ci4 -m oauth [PROVIDER]" +
-                        "\n■ MAKE CRUD: ci4 -m crud [TABLE]" +
-                        "\n■ MAKE API BASIC: ci4 -m api [TABLE]" +
-                        "\n■ MAKE API JWT: ci4 -m jwt [TABLE]" +
-                        "\n■ MAKE DB TO MIGRATION: ci4 -m migration [TABLE]"
+                        "\n■ MAKE CRUD: ci4 -m crud [TABLE] or * for ALL" +
+                        "\n■ MAKE API BASIC: ci4 -m api [TABLE] or * for ALL" +
+                        "\n■ MAKE API JWT: ci4 -m jwt [TABLE] or * for ALL" +
+                        "\n■ MAKE DB TO MIGRATION: ci4 -m migration [TABLE] or * for ALL"
             )]
         public IEnumerable<string> MakeCommand { get; set; }
 
